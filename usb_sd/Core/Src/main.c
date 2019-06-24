@@ -23,6 +23,7 @@
 #include "dma.h"
 #include "sdmmc.h"
 #include "usart.h"
+#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -181,6 +182,7 @@ int main(void)
   MX_DMA_Init();
   MX_SDMMC2_SD_Init();
   MX_USART1_UART_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   sd_test();
   /* USER CODE END 2 */

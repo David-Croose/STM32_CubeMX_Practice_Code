@@ -2,13 +2,6 @@
 !*.uvproj
 !*.uvoptx
 
-*.scvd
-*.lst
-*.uvguix.*
-*/DebugConfig
-*/RTE
-*/yyy
-
 *.d
 *.o
 
@@ -16,3 +9,12 @@
 .project
 .settings/
 
+*.scvd
+*.lst
+*.uvguix.*
+
+*/MDK-ARM/JLinkLog.txt
+*/MDK-ARM/JLinkSettings.ini
+*/MDK-ARM/yyy/
+*/MDK-ARM/RTE/
+*/MDK-ARM/DebugConfig
