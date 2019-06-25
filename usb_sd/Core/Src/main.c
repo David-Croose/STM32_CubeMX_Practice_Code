@@ -82,10 +82,16 @@ do {                                      \
 static int32_t wait_sd_idle(uint32_t n)
 {
 	uint32_t i;
+	HAL_SD_CardStateTypeDef sta;
 
-	for(i = 0; i < n && HAL_SD_GetState(&hsd2) != HAL_SD_CARD_READY; i++)
+	for(i = 0; i < n; i++)
 	{
-		HAL_Delay(10);
+		HAL_Delay(5);
+		sta = HAL_SD_GetCardState(&hsd2);
+		if(sta != HAL_SD_CARD_ERROR && sta != HAL_SD_CARD_DISCONNECTED)
+		{
+			break;
+		}
 	}
 	if(i >= n)
 	{
@@ -96,7 +102,7 @@ static int32_t wait_sd_idle(uint32_t n)
 
 static void sd_test(void)
 {
-	static uint8_t wbuf[512 * 4];
+	static uint8_t wbuf[512 * 40];
 	static uint8_t rbuf[sizeof(wbuf)];
 	uint32_t i;
 	HAL_SD_CardInfoTypeDef info;
@@ -117,23 +123,17 @@ static void sd_test(void)
 	printf("LogBlockNbr=%d\r\n", info.LogBlockNbr);
 	printf("LogBlockSize=%d\r\n", info.LogBlockSize);
 
-	if(wait_sd_idle(5) || HAL_SD_WriteBlocks_DMA(&hsd2, wbuf, 0, sizeof(wbuf) / 512) != HAL_OK)
+	if(wait_sd_idle(5) || HAL_SD_WriteBlocks(&hsd2, wbuf, 4, sizeof(wbuf) / 512, 10) != HAL_OK)
 	{
 		printf("error, sd wrote failed\r\n");
 		return;
 	}
 
-	if(wait_sd_idle(5) || HAL_SD_ReadBlocks_DMA(&hsd2, rbuf, 0, sizeof(rbuf) / 512) != HAL_OK)
+	if(wait_sd_idle(5) || HAL_SD_ReadBlocks(&hsd2, rbuf, 4, sizeof(rbuf) / 512, 10) != HAL_OK)
 	{
 		printf("error, sd read failed\r\n");
 		return;
 	}
-
-	/*
-	 * it looks redundant of this code, but it can let the code("if(wbuf[i] != rbuf[i])") below go
-	 * right, i think this may be a bug of ARMCC
-	 */
-	print_buf(rbuf, 10, "rbuf=");
 
 	for(i = 0; i < sizeof(wbuf); i++)
 	{
